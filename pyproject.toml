@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lazytune"
+version = "0.1.0"
+description = "LazyTune: efficient hyperparameter optimization with early pruning"
+authors = [
+{name = "Anik Chand"}
+]
+dependencies = [
+"numpy",
+"pandas",
+"scikit-learn"
+]
+
+[tool.setuptools.packages.find]
+include = ["lazytune*"]
+exclude = ["api*", "frontend*", "datasets*", "examples*", "tests*", "docs*"]
+

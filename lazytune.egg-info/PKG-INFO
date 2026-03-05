@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: lazytune
+Version: 0.1.0
+Summary: LazyTune: efficient hyperparameter optimization with early pruning
+Author: Anik Chand
+License-File: LICENSE
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: scikit-learn
+Dynamic: license-file
