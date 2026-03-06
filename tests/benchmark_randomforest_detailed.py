@@ -3,34 +3,60 @@ import warnings
 import optuna
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 from hyperopt import fmin, tpe, hp, Trials, STATUS_OK
 
-from sklearn.datasets import load_breast_cancer, load_wine, load_iris, load_digits
+from sklearn.datasets import load_breast_cancer, load_wine, load_digits
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, cross_val_score
 
 from lazytune import SmartSearch
+
+warnings.filterwarnings("ignore", category=UserWarning)
 
 
 warnings.filterwarnings("ignore")
 optuna.logging.set_verbosity(optuna.logging.CRITICAL)
 
 
+# --------------------------------------------------
+# Load CSV Dataset
+# --------------------------------------------------
+
+df = pd.read_csv("./tests/diabetes.csv")
+
+X_csv = df.iloc[:, :-1].values
+y_csv = df.iloc[:, -1].values
+
+
+# --------------------------------------------------
+# Dataset Dictionary
+# --------------------------------------------------
+
 datasets = {
     "Breast Cancer": load_breast_cancer(),
     "Wine": load_wine(),
-    "Iris": load_iris(),
+    "Diabetes CSV": (X_csv, y_csv),
     "Digits": load_digits()
 }
 
 
+# --------------------------------------------------
+# Hyperparameter Grid
+# --------------------------------------------------
+
 param_grid = {
-    "n_estimators": [50, 100, 150],
-    "max_depth": [5, 10, 15],
-    "min_samples_split": [2, 5]
+    "n_estimators": [50,100,150,200],
+    "max_depth": [5,10,15],
+    "min_samples_split": [2,3,4,5],
+    "max_features": ["sqrt","log2"]
 }
 
+
+# --------------------------------------------------
+# Results Storage
+# --------------------------------------------------
 
 results = {
     "LazyTune": {"score": [], "time": []},
@@ -41,14 +67,22 @@ results = {
 }
 
 
+# --------------------------------------------------
+# Benchmark Loop
+# --------------------------------------------------
+
 for name, data in datasets.items():
 
     print("\n====================================================")
     print("DATASET:", name)
     print("====================================================")
 
-    X = data.data
-    y = data.target
+    # Handle sklearn vs CSV datasets
+    if isinstance(data, tuple):
+        X, y = data
+    else:
+        X = data.data
+        y = data.target
 
     model = RandomForestClassifier(random_state=42)
 
@@ -59,7 +93,17 @@ for name, data in datasets.items():
 
     start = time.time()
 
-    lazy = SmartSearch(model, param_grid, prune_ratio=0.7)
+    lazy = SmartSearch(
+        model,
+        param_grid,
+        prune_ratio=0.7,
+        cv_folds=2,
+        prune_strategy="ratio",
+        verbose=False,
+        n_jobs=-1,
+        parallel=True
+    )
+
     lazy.fit(X, y)
 
     lazy_time = time.time() - start
@@ -74,12 +118,17 @@ for name, data in datasets.items():
 
 
     # --------------------------------------------------
-    # GridSearch
+    # GridSearchCV
     # --------------------------------------------------
 
     start = time.time()
 
-    grid = GridSearchCV(model, param_grid, cv=5)
+    grid = GridSearchCV(
+        model,
+        param_grid,
+        cv=2,
+        n_jobs=-1
+    )
     grid.fit(X, y)
 
     grid_time = time.time() - start
@@ -94,7 +143,7 @@ for name, data in datasets.items():
 
 
     # --------------------------------------------------
-    # RandomSearch
+    # RandomizedSearchCV
     # --------------------------------------------------
 
     start = time.time()
@@ -102,9 +151,10 @@ for name, data in datasets.items():
     rand = RandomizedSearchCV(
         model,
         param_grid,
-        n_iter=6,
-        cv=5,
-        random_state=42
+        n_iter=96,
+        cv=2,
+        random_state=42,
+        n_jobs=-1
     )
 
     rand.fit(X, y)
@@ -127,20 +177,21 @@ for name, data in datasets.items():
     def optuna_objective(trial):
 
         params = {
-            "n_estimators": trial.suggest_int("n_estimators", 50, 150),
-            "max_depth": trial.suggest_int("max_depth", 5, 15),
-            "min_samples_split": trial.suggest_int("min_samples_split", 2, 5)
+            "n_estimators": trial.suggest_categorical("n_estimators", [50,100,150,200]),
+            "max_depth": trial.suggest_categorical("max_depth", [5,10,15]),
+            "min_samples_split": trial.suggest_categorical("min_samples_split", [2,3,4,5]),
+            "max_features": trial.suggest_categorical("max_features", ["sqrt","log2"])
         }
 
         model = RandomForestClassifier(**params)
 
-        return cross_val_score(model, X, y, cv=5).mean()
+        return cross_val_score(model, X, y, cv=2, n_jobs=-1).mean()
 
 
     start = time.time()
 
     study = optuna.create_study(direction="maximize")
-    study.optimize(optuna_objective, n_trials=18)
+    study.optimize(optuna_objective, n_trials=96, n_jobs=-1)
 
     optuna_time = time.time() - start
 
@@ -158,17 +209,17 @@ for name, data in datasets.items():
     # --------------------------------------------------
 
     space = {
-        "n_estimators": hp.choice("n_estimators", [50, 100, 150]),
-        "max_depth": hp.choice("max_depth", [5, 10, 15]),
-        "min_samples_split": hp.choice("min_samples_split", [2, 5])
+        "n_estimators": hp.choice("n_estimators",[50,100,150,200]),
+        "max_depth": hp.choice("max_depth",[5,10,15]),
+        "min_samples_split": hp.choice("min_samples_split",[2,3,4,5]),
+        "max_features": hp.choice("max_features",["sqrt","log2"])
     }
-
 
     def hyperopt_objective(params):
 
         model = RandomForestClassifier(**params)
 
-        score = cross_val_score(model, X, y, cv=5).mean()
+        score = cross_val_score(model, X, y, cv=2, n_jobs=-1).mean()
 
         return {"loss": -score, "status": STATUS_OK}
 
@@ -181,21 +232,23 @@ for name, data in datasets.items():
         fn=hyperopt_objective,
         space=space,
         algo=tpe.suggest,
-        max_evals=18,
+        max_evals=96,
         trials=trials
     )
 
     hyperopt_time = time.time() - start
 
 
-    n_estimators_list = [50, 100, 150]
-    max_depth_list = [5, 10, 15]
-    min_samples_split_list = [2, 5]
+    n_estimators_list = [50,100,150,200]
+    max_depth_list = [5,10,15]
+    min_samples_split_list = [2,3,4,5]
+    max_features_list = ["sqrt","log2"]
 
     best_params = {
         "n_estimators": n_estimators_list[best["n_estimators"]],
         "max_depth": max_depth_list[best["max_depth"]],
-        "min_samples_split": min_samples_split_list[best["min_samples_split"]]
+        "min_samples_split": min_samples_split_list[best["min_samples_split"]],
+        "max_features": max_features_list[best["max_features"]]
     }
 
     best_score = -min([t["result"]["loss"] for t in trials.trials])
@@ -210,17 +263,13 @@ for name, data in datasets.items():
 
 
 # --------------------------------------------------
-# Professional Benchmark Chart
+# Benchmark Chart
 # --------------------------------------------------
 
 methods = list(results.keys())
 
-avg_scores = [sum(results[m]["score"]) / len(results[m]["score"]) for m in methods]
-avg_times = [sum(results[m]["time"]) / len(results[m]["time"]) for m in methods]
-
-
-import numpy as np
-import matplotlib.pyplot as plt
+avg_scores = [np.mean(results[m]["score"]) for m in methods]
+avg_times = [np.mean(results[m]["time"]) for m in methods]
 
 plt.style.use("seaborn-v0_8-whitegrid")
 
@@ -229,22 +278,16 @@ width = 0.38
 
 fig, ax1 = plt.subplots(figsize=(12,7))
 
-
-# Accuracy Bars
 accuracy_bars = ax1.bar(
     x - width/2,
     avg_scores,
     width,
-    color="#2E86AB",
-    label="Accuracy"
+    color="#2E86AB"
 )
 
 ax1.set_ylabel("Accuracy", fontsize=13)
-ax1.set_ylim(0.90, 1.0)
-ax1.set_yticks(np.linspace(0.90,1.0,6))
+ax1.set_ylim(0.85, 1.0)
 
-
-# Add accuracy labels
 for bar in accuracy_bars:
     height = bar.get_height()
     ax1.text(
@@ -257,21 +300,17 @@ for bar in accuracy_bars:
     )
 
 
-# Second Axis for Time
 ax2 = ax1.twinx()
 
 time_bars = ax2.bar(
     x + width/2,
     avg_times,
     width,
-    color="#F24236",
-    label="Time (seconds)"
+    color="#F24236"
 )
 
 ax2.set_ylabel("Time (seconds)", fontsize=13)
 
-
-# Add time labels
 for bar in time_bars:
     height = bar.get_height()
     ax2.text(
@@ -284,31 +323,23 @@ for bar in time_bars:
     )
 
 
-# X-axis labels
 ax1.set_xticks(x)
 ax1.set_xticklabels(methods, fontsize=12)
 
-
-# Title
 plt.title(
     "Hyperparameter Optimization Benchmark\nAccuracy vs Runtime",
     fontsize=16,
     fontweight="bold"
 )
 
-
-# Grid
 ax1.grid(True, linestyle="--", alpha=0.6)
 
-
-# Legend
 fig.legend(
     ["Accuracy", "Time"],
     loc="upper center",
     ncol=2,
     fontsize=12
 )
-
 
 plt.tight_layout()
 plt.show()

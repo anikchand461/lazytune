@@ -24,6 +24,7 @@ lazytune/training/screening.py
 lazytune/utils/__init__.py
 lazytune/utils/data_split.py
 lazytune/utils/timer.py
+tests/test_lazytune.py
 tests/test_pipeline.py
 tests/test_pruning.py
 tests/test_search.py

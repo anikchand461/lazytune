@@ -1,17 +1,20 @@
+from sklearn.metrics import get_scorer
+
+
 def evaluate_models(models, X_test, y_test, metric):
+
+    scorer = get_scorer(metric)
 
     results = []
 
     for item in models:
 
-        m = item["model"]
+        model = item["model"]
 
-        preds = m.predict(X_test)
-
-        score = metric(y_test, preds)
+        score = scorer(model, X_test, y_test)
 
         results.append({
-            "model": m,
+            "model": model,
             "params": item["params"],
             "score": score
         })

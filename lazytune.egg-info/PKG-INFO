@@ -1,10 +1,22 @@
 Metadata-Version: 2.4
 Name: lazytune
 Version: 0.1.0
-Summary: LazyTune: efficient hyperparameter optimization with early pruning
+Summary: Fast hyperparameter optimization using screening and pruning
 Author: Anik Chand
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
 License-File: LICENSE
 Requires-Dist: numpy
 Requires-Dist: pandas
 Requires-Dist: scikit-learn
 Dynamic: license-file
+
+# LazyTune
+
+LazyTune is a lightweight hyperparameter optimization framework.
+
+It speeds up hyperparameter tuning using:
+
+- parameter screening
+- model pruning
+- selective full training
