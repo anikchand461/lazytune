@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lazytune"
-version = "0.1.2"
+version = "0.1.3"
 description = "Fast hyperparameter optimization using screening and pruning"
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.8"
@@ -36,9 +36,8 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/lazytune"
-Repository = "https://github.com/yourusername/lazytune"
-Issues = "https://github.com/yourusername/lazytune/issues"
+Homepage = "https://lazytune.vercel.app"
+Repository = "https://github.com/anikchand461/lazytune"
 
 [tool.setuptools.packages.find]
 include = ["lazytune*"]

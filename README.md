@@ -1,22 +1,40 @@
-# LazyTune
+<div align="center">
 
-**LazyTune** is a fast and efficient hyperparameter optimization framework for machine learning models.
+# LazyTune 🚀
 
-It dramatically reduces unnecessary training time by using a smart **screening → ranking → pruning → full training** pipeline — while staying 100% compatible with scikit-learn estimators.
+![LazyTune](frontend/main.png)
 
-Supports classification & regression, all scikit-learn metrics, custom scorers, cross-validation screening, early pruning of poor configurations, parallel execution, and clean result reporting.
+**Fast, smart, and lazy hyperparameter optimization**  
+for scikit-learn models — up to **5–10× faster** than GridSearchCV  
+with almost the same final performance.
 
-## Features
+![Data Flow](frontend/dataflow.png)
 
-- Compatible with **any scikit-learn-style estimator**
-- Works for both **classification** and **regression**
-- Supports **all scikit-learn built-in metrics** (`accuracy`, `f1`, `r2`, `neg_mean_squared_error`, etc.)
-- Allows **custom scoring functions** via `make_scorer`
-- Fast initial screening with cross-validation
-- Early **pruning** of weak hyperparameter settings (`prune_ratio`)
-- Parallel execution support (`n_jobs`)
-- Structured trial summaries and ranking
-- Returns best model, parameters, score + detailed report
+<br>
+
+[![PyPI version](https://badge.fury.io/py/lazytune.svg)](https://pypi.org/project/lazytune/)
+[![Python versions](https://img.shields.io/pypi/pyversions/lazytune.svg)](https://pypi.org/project/lazytune/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+**Live Demo** → [https://lazytune.vercel.app](https://lazytune.vercel.app)  
+**PyPI** → [https://pypi.org/project/lazytune/](https://pypi.org/project/lazytune/)
+
+<br>
+
+</div>
+
+## 🔥 Why LazyTune?
+
+- 100% compatible with **any scikit-learn-style estimator**
+- Works for **classification** & **regression**
+- Supports **all scikit-learn metrics** + custom scorers
+- Smart pipeline: **screening → ranking → pruning → full training**
+- Early **pruning** of poor configurations (`prune_ratio`)
+- Parallel execution (`n_jobs`)
+- Clean trial summaries & rankings in pandas DataFrame
+- Returns best model, params, score + detailed report
+
+<br>
 
 ## Installation
 
@@ -24,7 +42,9 @@ Supports classification & regression, all scikit-learn metrics, custom scorers, 
 pip install lazytune
 ```
 
-## Quick Start Example
+<br>
+
+## Quick Start
 
 ```python
 from sklearn.datasets import load_breast_cancer
@@ -45,7 +65,7 @@ search = SmartSearch(
     metric="accuracy",
     cv_folds=3,
     prune_ratio=0.5,       # keep top 50% after screening
-    n_jobs=-1              # use all available cores
+    n_jobs=-1              # use all cores
 )
 
 search.fit(X, y)
@@ -54,6 +74,8 @@ print("Best parameters:", search.best_params_)
 print("Best CV score:   ", search.best_score_)
 print("\nBest model:\n", search.best_estimator_)
 ```
+
+<br>
 
 ## More Examples
 
@@ -95,6 +117,8 @@ search = SmartSearch(
 )
 ```
 
+<br>
+
 ## Supported Metrics (examples)
 
 ### **Classification**
@@ -103,32 +127,37 @@ search = SmartSearch(
 
 ### **Regression**
 
-`r2` • `neg_mean_squared_error` • `neg_root_mean_squared_error` • `neg_mean_absolute_error` • `neg_mean_absolute_percentage_error` • ...
+`r2` • `neg_mean_squared_error` • `neg_root_mean_squared_error` • `neg_mean_absolute_error` • ...
 
 Custom metrics → use `sklearn.metrics.make_scorer`
 
-## How It Works (LazyTune Strategy)
+<br>
+
+## How LazyTune Works
 
 1. Generate all (or sampled) hyperparameter combinations
-2. Quick **screening** round with cross-validation (low resources)
+2. Quick **screening** round with cross-validation
 3. Rank configurations by performance
-4. **Prune** bottom performers (controlled by `prune_ratio`)
-5. Train remaining promising candidates more thoroughly
-6. Return best model + full summary of all evaluated trials
+4. **Prune** bottom performers (`prune_ratio`)
+5. Train remaining promising candidates thoroughly
+6. Return best model + full trial summary
 
-→ Much faster than full GridSearchCV while usually keeping very similar final performance.
+→ **Much faster** than GridSearchCV / RandomizedSearchCV  
+→ Usually very close (or identical) final performance
+
+<br>
 
 ## Main API – `SmartSearch`
 
 ### Key Attributes
 
-| Attribute         | Description                                     |
-| ----------------- | ----------------------------------------------- |
-| `best_params_`    | Best found hyperparameter dictionary            |
-| `best_score_`     | Best cross-validated score                      |
-| `best_estimator_` | Fully fitted estimator with best parameters     |
-| `summary_`        | pandas DataFrame with trial results & rankings  |
-| `cv_results_`     | Detailed cross-validation results per candidate |
+| Attribute         | Description                                    |
+| ----------------- | ---------------------------------------------- |
+| `best_params_`    | Best hyperparameter dictionary                 |
+| `best_score_`     | Best cross-validated score                     |
+| `best_estimator_` | Fully fitted estimator with best parameters    |
+| `summary_`        | pandas DataFrame with trial results & rankings |
+| `cv_results_`     | Detailed CV results per candidate              |
 
 ### Main Methods
 
@@ -137,6 +166,8 @@ Custom metrics → use `sklearn.metrics.make_scorer`
 - `.score(X, y)`
 - `.get_params()` / `.set_params()`
 
+<br>
+
 ## Requirements
 
 - Python ≥ 3.8
@@ -144,15 +175,17 @@ Custom metrics → use `sklearn.metrics.make_scorer`
 - pandas
 - scikit-learn
 
-## Author
+<br>
 
-**Anik Chand**
+<div align="center">
 
-## License
-
+**Made with ❤️ by [Anik Chand](https://github.com/anikchand461)**  
 MIT License
 
----
+Feedback, issues, stars, and contributions are **very welcome**! 🌟
 
-Feedback, issues, stars, and contributions are very welcome!  
+[Try Live Demo](https://lazytune.vercel.app) • [Install from PyPI](https://pypi.org/project/lazytune/)
+
 Happy tuning! 🚀
+
+</div>
