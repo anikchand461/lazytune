@@ -1,0 +1,2 @@
+UPLOAD_FOLDER = "datasets"
+MAX_ROWS = 5000

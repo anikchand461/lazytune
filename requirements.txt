@@ -1,3 +1,9 @@
-scikit-learn
-numpy
+fastapi
+uvicorn
 pandas
+numpy
+scikit-learn
+lazytune
+python-multipart
+joblib
+pydantic

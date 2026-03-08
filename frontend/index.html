@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LazyTune — Hyperparameter Optimizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- ─── LOADER ──────────────────────────────────── -->
+    <div id="loader">
+      <svg
+        class="loader-hex"
+        viewBox="0 0 80 80"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <polygon class="lhex" points="40,3 74,21 74,59 40,77 6,59 6,21" />
+        <path class="lbolt" d="M46 12 L27 44 H39 L34 68 L57 32 H45 Z" />
+      </svg>
+      <div class="loader-bar-wrap">
+        <div class="loader-bar"></div>
+      </div>
+      <div class="loader-label">Initializing LazyTune</div>
+    </div>
+
+    <!-- ─── PARTICLES ───────────────────────────────── -->
+    <canvas id="particles"></canvas>
+
+    <!-- ─── HEADER ──────────────────────────────────── -->
+    <header>
+      <div class="header-inner">
+        <a class="brand" href="index.html">
+          <div class="logo-hex">
+            <svg
+              viewBox="0 0 44 44"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <polygon
+                class="hex-bg"
+                points="22,2 40,11.5 40,32.5 22,42 4,32.5 4,11.5"
+              />
+              <path class="hex-bolt" d="M25 8 L15 24 H22 L19 36 L31 18 H24 Z" />
+            </svg>
+          </div>
+          <div class="brand-text">
+            <div class="brand-name">LazyTune</div>
+            <div class="brand-tagline">Hyperparameter Optimizer</div>
+          </div>
+        </a>
+
+        <div class="header-right">
+          <nav class="header-nav">
+            <a class="nav-link active" href="index.html">App</a>
+            <a class="nav-link" href="docs.html">Docs</a>
+          </nav>
+          <div class="status-chip">
+            <span class="status-dot" id="status-dot"></span>
+            <span id="status-text">Ready</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ─── STEPPER ──────────────────────────────────── -->
+    <div class="stepper-wrap">
+      <div class="stepper">
+        <div class="step active" data-step="1">
+          <div class="step-bubble">1</div>
+          <span>Dataset</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="2">
+          <div class="step-bubble">2</div>
+          <span>Model</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="3">
+          <div class="step-bubble">3</div>
+          <span>Parameters</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="4">
+          <div class="step-bubble">4</div>
+          <span>Results</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── MAIN ─────────────────────────────────────── -->
+    <main>
+      <!-- 01 Dataset -->
+      <div class="card" id="section-dataset">
+        <div class="card-label">01 &mdash; Dataset</div>
+        <h2>Upload CSV</h2>
+        <p class="card-desc">
+          Drop a dataset file to begin. Accepts standard CSV format.
+        </p>
+
+        <div
+          id="upload-zone"
+          onclick="document.getElementById('dataset').click()"
+        >
+          <input type="file" id="dataset" accept=".csv" hidden />
+          <div class="upload-icon-wrap">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+          </div>
+          <div class="upload-text">Click or drag to upload</div>
+          <div id="file-label" class="upload-filename">No file chosen</div>
+        </div>
+
+        <button class="btn btn-primary" onclick="uploadDataset()">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+          Upload Dataset
+        </button>
+      </div>
+
+      <!-- 02 Model -->
+      <div class="card" id="section-model">
+        <div class="card-label">02 &mdash; Model</div>
+        <h2>Configure Model</h2>
+        <p class="card-desc">
+          Select the algorithm, target column, and the metric to optimize.
+        </p>
+
+        <div class="fields-grid">
+          <div class="field">
+            <label class="field-label">Model</label>
+            <div class="select-wrap">
+              <select id="model" onchange="updateOptions()">
+                <option value="RandomForestClassifier">
+                  RandomForestClassifier
+                </option>
+                <option value="SVC">SVC</option>
+                <option value="LogisticRegression">LogisticRegression</option>
+                <option value="RandomForestRegressor">
+                  RandomForestRegressor
+                </option>
+                <option value="LinearRegression">LinearRegression</option>
+              </select>
+              <svg
+                class="select-chevron"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Target Column</label>
+            <input type="text" id="target" placeholder="e.g. target" />
+          </div>
+
+          <div class="field">
+            <label class="field-label">Scoring Metric</label>
+            <div class="select-wrap">
+              <select id="metric"></select>
+              <svg
+                class="select-chevron"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 03 Parameters -->
+      <div class="card" id="section-params">
+        <div class="card-label">03 &mdash; Parameters</div>
+        <h2>Parameter Grid</h2>
+        <p class="card-desc">
+          Add hyperparameters and their candidate values (comma-separated).
+        </p>
+
+        <div id="params-container"></div>
+
+        <button class="btn btn-ghost" onclick="addParam()">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Add Parameter
+        </button>
+
+        <div class="divider"></div>
+
+        <button class="btn btn-run" onclick="runOptimization()">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polygon points="5 3 19 12 5 21 5 3" />
+          </svg>
+          Run LazyTune
+        </button>
+      </div>
+
+      <!-- 04 Results -->
+      <div class="card" id="section-results">
+        <div class="card-label">04 &mdash; Results</div>
+        <h2>Output</h2>
+        <p class="card-desc">
+          Best parameters and score will appear here after the run completes.
+        </p>
+
+        <pre id="result" class="result-pre">Awaiting optimization...</pre>
+
+        <button
+          id="btn-copy"
+          class="btn btn-ghost"
+          onclick="copyResult()"
+          style="display: none"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg>
+          Copy Result
+        </button>
+      </div>
+    </main>
+
+    <div id="toast" class="toast"></div>
+    <script src="app.js"></script>
+  </body>
+</html>

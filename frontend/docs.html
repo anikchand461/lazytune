@@ -1,0 +1,1523 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LazyTune — Documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fira+Code:wght@300;400;500;600&family=DM+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ─── TOKENS ───────────────────────────── */
+      :root {
+        --bg: #0a0a0a;
+        --surface: #111;
+        --card: #161616;
+        --border: #242424;
+        --accent: #c8ff00;
+        --accent2: #00e5ff;
+        --danger: #ff3c3c;
+        --text: #f0f0f0;
+        --muted: #666;
+        --code-bg: #080808;
+        --mono: "Fira Code", monospace;
+        --display: "Bebas Neue", sans-serif;
+        --body: "DM Sans", sans-serif;
+        --sidebar: 260px;
+        --px: 40px;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        font-family: var(--body);
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        overflow-x: hidden;
+        font-size: 16px;
+      }
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 9999;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 0, 0, 0.12) 2px,
+          rgba(0, 0, 0, 0.12) 4px
+        );
+        mix-blend-mode: multiply;
+      }
+
+      /* ─── LOADER ───────────────────────────── */
+      #loader {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: var(--bg);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 28px;
+        transition:
+          opacity 0.5s ease,
+          visibility 0.5s ease;
+      }
+      #loader.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      .loader-hex {
+        width: 80px;
+        height: 80px;
+        animation: loaderSpin 2s linear infinite;
+        filter: drop-shadow(0 0 18px var(--accent));
+      }
+      .loader-hex .lhex {
+        fill: var(--accent);
+      }
+      .loader-hex .lbolt {
+        fill: #0a0a0a;
+      }
+      @keyframes loaderSpin {
+        0% {
+          transform: rotate(0deg) scale(1);
+          filter: drop-shadow(0 0 8px var(--accent));
+        }
+        25% {
+          transform: rotate(90deg) scale(1.08);
+          filter: drop-shadow(0 0 22px var(--accent));
+        }
+        50% {
+          transform: rotate(180deg) scale(1);
+          filter: drop-shadow(0 0 8px var(--accent));
+        }
+        75% {
+          transform: rotate(270deg) scale(1.08);
+          filter: drop-shadow(0 0 22px var(--accent));
+        }
+        100% {
+          transform: rotate(360deg) scale(1);
+          filter: drop-shadow(0 0 8px var(--accent));
+        }
+      }
+      .loader-bar-wrap {
+        width: 200px;
+        height: 2px;
+        background: var(--border);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .loader-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        border-radius: 99px;
+        animation: loadFill 1.6s ease forwards;
+        box-shadow: 0 0 10px var(--accent);
+      }
+      @keyframes loadFill {
+        to {
+          width: 100%;
+        }
+      }
+      .loader-label {
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+        animation: loaderFade 1.6s ease-in-out infinite alternate;
+      }
+      @keyframes loaderFade {
+        from {
+          opacity: 0.4;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* ─── HEADER ───────────────────────────── */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 200;
+        background: rgba(10, 10, 10, 0.93);
+        border-bottom: 1px solid var(--border);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+      .header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 14px var(--px);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        text-decoration: none;
+        flex-shrink: 0;
+      }
+      .logo-hex {
+        width: 42px;
+        height: 42px;
+        flex-shrink: 0;
+      }
+      .logo-hex svg {
+        width: 42px;
+        height: 42px;
+      }
+      .hex-bg {
+        fill: var(--accent);
+        animation: hexPulse 3s ease-in-out infinite;
+      }
+      .hex-bolt {
+        fill: #0a0a0a;
+      }
+      @keyframes hexPulse {
+        0%,
+        100% {
+          filter: drop-shadow(0 0 4px var(--accent));
+        }
+        50% {
+          filter: drop-shadow(0 0 16px var(--accent))
+            drop-shadow(0 0 32px rgba(200, 255, 0, 0.4));
+        }
+      }
+      .brand-name {
+        font-family: var(--display);
+        font-size: 28px;
+        letter-spacing: 0.06em;
+        color: var(--accent);
+        line-height: 1;
+      }
+      .brand-tagline {
+        font-family: var(--mono);
+        font-size: 9px;
+        color: var(--muted);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        margin-top: 3px;
+      }
+      .header-nav {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .nav-link {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--muted);
+        text-decoration: none;
+        padding: 7px 14px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+      .nav-link:hover {
+        color: var(--accent);
+        border-color: var(--border);
+      }
+      .nav-link.active {
+        color: var(--bg);
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+
+      /* ─── MOBILE NAV TOGGLE ────────────────── */
+      .toc-toggle {
+        display: none;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        color: var(--text);
+        padding: 8px 14px;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        cursor: pointer;
+        align-items: center;
+        gap: 8px;
+        margin: 16px var(--px) 0;
+      }
+      .toc-toggle svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      /* ─── LAYOUT ───────────────────────────── */
+      .doc-layout {
+        display: flex;
+        flex: 1;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+        padding: 0 var(--px);
+      }
+
+      /* ─── SIDEBAR ──────────────────────────── */
+      .doc-sidebar {
+        width: var(--sidebar);
+        flex-shrink: 0;
+        padding: 36px 0 60px;
+        position: sticky;
+        top: 72px;
+        height: calc(100vh - 72px);
+        overflow-y: auto;
+        scrollbar-width: none;
+        transition: transform 0.3s ease;
+      }
+      .doc-sidebar::-webkit-scrollbar {
+        display: none;
+      }
+      .sidebar-title {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 16px;
+        padding-left: 4px;
+      }
+      .toc-group {
+        margin-bottom: 24px;
+      }
+      .toc-group-label {
+        font-family: var(--mono);
+        font-size: 9px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding: 4px 12px;
+        margin-bottom: 4px;
+        opacity: 0.6;
+      }
+      .toc-link {
+        display: block;
+        padding: 8px 12px;
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--muted);
+        text-decoration: none;
+        border-left: 2px solid transparent;
+        border-radius: 0 6px 6px 0;
+        letter-spacing: 0.03em;
+        transition: all 0.2s;
+        line-height: 1.4;
+      }
+      .toc-link:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .toc-link.active {
+        color: var(--accent);
+        border-left-color: var(--accent);
+        background: rgba(200, 255, 0, 0.05);
+      }
+      .toc-link.sub {
+        padding-left: 24px;
+        font-size: 11px;
+      }
+
+      /* ─── CONTENT ──────────────────────────── */
+      .doc-content {
+        flex: 1;
+        padding: 48px 0 80px 56px;
+        border-left: 1px solid var(--border);
+        min-width: 0;
+      }
+
+      /* ─── HERO ─────────────────────────────── */
+      .doc-hero {
+        margin-bottom: 56px;
+        padding-bottom: 40px;
+        border-bottom: 1px solid var(--border);
+      }
+      .doc-hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: rgba(200, 255, 0, 0.08);
+        border: 1px solid rgba(200, 255, 0, 0.2);
+        padding: 6px 14px;
+        border-radius: 99px;
+        margin-bottom: 20px;
+      }
+      .doc-hero-badge span {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 6px var(--accent);
+        animation: blink 2s ease-in-out infinite;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+      .doc-hero h1 {
+        font-family: var(--display);
+        font-size: 72px;
+        letter-spacing: 0.04em;
+        line-height: 0.95;
+        margin-bottom: 18px;
+      }
+      .doc-hero h1 span {
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .doc-hero-desc {
+        font-size: 16px;
+        color: var(--muted);
+        line-height: 1.7;
+        max-width: 580px;
+        margin-bottom: 28px;
+      }
+      .hero-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .hero-tag {
+        font-family: var(--mono);
+        font-size: 11px;
+        padding: 5px 12px;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        letter-spacing: 0.06em;
+      }
+      .hero-tag.green {
+        border-color: rgba(200, 255, 0, 0.3);
+        color: var(--accent);
+        background: rgba(200, 255, 0, 0.05);
+      }
+      .hero-tag.blue {
+        border-color: rgba(0, 229, 255, 0.3);
+        color: var(--accent2);
+        background: rgba(0, 229, 255, 0.05);
+      }
+
+      /* ─── SECTIONS ─────────────────────────── */
+      .doc-section {
+        margin-bottom: 64px;
+        scroll-margin-top: 90px;
+      }
+      .doc-section h2 {
+        font-family: var(--display);
+        font-size: 42px;
+        letter-spacing: 0.04em;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .doc-section h2::before {
+        content: attr(data-num);
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--accent);
+        letter-spacing: 0.14em;
+        opacity: 0.6;
+        padding-top: 8px;
+      }
+      .doc-section h3 {
+        font-size: 19px;
+        font-weight: 700;
+        margin: 28px 0 12px;
+        color: var(--text);
+        padding-left: 14px;
+        border-left: 2px solid var(--accent);
+      }
+      .doc-section p {
+        font-size: 15px;
+        color: #aab;
+        line-height: 1.75;
+        margin-bottom: 16px;
+      }
+      .doc-section ul,
+      .doc-section ol {
+        padding-left: 20px;
+        margin-bottom: 16px;
+      }
+      .doc-section li {
+        font-size: 15px;
+        color: #aab;
+        line-height: 1.75;
+        margin-bottom: 6px;
+      }
+      .doc-section li strong {
+        color: var(--text);
+      }
+
+      /* ─── CODE ─────────────────────────────── */
+      .code-wrap {
+        position: relative;
+        margin: 20px 0;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #1e1e1e;
+      }
+      .code-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #0d0d0d;
+        padding: 10px 16px;
+        border-bottom: 1px solid #1e1e1e;
+      }
+      .code-lang {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .code-copy {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--muted);
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 4px 10px;
+        cursor: pointer;
+        letter-spacing: 0.06em;
+        transition: all 0.2s;
+        text-transform: uppercase;
+      }
+      .code-copy:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      pre.code-block {
+        background: var(--code-bg);
+        padding: 22px 24px;
+        font-family: var(--mono);
+        font-size: 13.5px;
+        line-height: 1.75;
+        overflow-x: auto;
+        margin: 0;
+        color: #cdd3de;
+        tab-size: 2;
+      }
+      .kw {
+        color: #c8ff00;
+      }
+      .fn {
+        color: #79c0ff;
+      }
+      .str {
+        color: #a5d6ff;
+      }
+      .cm {
+        color: #484f58;
+        font-style: italic;
+      }
+      .nb {
+        color: #ff9e64;
+      }
+      .pm {
+        color: #d2a8ff;
+      }
+      .op {
+        color: #89ddff;
+      }
+      .cls {
+        color: #ffa657;
+      }
+
+      code {
+        font-family: var(--mono);
+        font-size: 0.88em;
+        background: rgba(200, 255, 0, 0.08);
+        color: var(--accent);
+        padding: 2px 7px;
+        border-radius: 4px;
+        border: 1px solid rgba(200, 255, 0, 0.15);
+      }
+
+      /* ─── TABLE ─────────────────────────────── */
+      .table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 20px 0;
+      }
+      .doc-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        min-width: 500px;
+      }
+      .doc-table th {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: rgba(200, 255, 0, 0.05);
+        padding: 12px 16px;
+        text-align: left;
+        border-bottom: 1px solid rgba(200, 255, 0, 0.2);
+      }
+      .doc-table td {
+        padding: 12px 16px;
+        color: #aab;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+        line-height: 1.6;
+      }
+      .doc-table tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .doc-table td code {
+        font-size: 0.85em;
+      }
+
+      /* ─── PIPELINE ──────────────────────────── */
+      .pipeline {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        margin: 24px 0;
+      }
+      .pipe-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 20px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .pipe-step:last-child {
+        border-bottom: none;
+      }
+      .pipe-num {
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--mono);
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--accent);
+        margin-top: 2px;
+        transition: all 0.3s;
+      }
+      .pipe-step:hover .pipe-num {
+        background: var(--accent);
+        color: var(--bg);
+        box-shadow: 0 0 16px rgba(200, 255, 0, 0.4);
+      }
+      .pipe-body h4 {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 4px;
+        color: var(--text);
+      }
+      .pipe-body p {
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.6;
+        margin: 0;
+      }
+
+      /* ─── INSTALL BOX ───────────────────────── */
+      .install-box {
+        display: flex;
+        align-items: center;
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 20px 0;
+        flex-wrap: nowrap;
+      }
+      .install-prompt {
+        font-family: var(--mono);
+        font-size: 14px;
+        color: var(--accent);
+        padding: 16px 20px;
+        border-right: 1px solid var(--border);
+        user-select: none;
+        opacity: 0.5;
+        flex-shrink: 0;
+      }
+      .install-cmd {
+        font-family: var(--mono);
+        font-size: 15px;
+        color: var(--text);
+        padding: 16px 20px;
+        flex: 1;
+        letter-spacing: 0.04em;
+        min-width: 0;
+        word-break: break-all;
+      }
+      .install-copy {
+        padding: 16px 20px;
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--muted);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: color 0.2s;
+        border-left: 1px solid var(--border);
+        flex-shrink: 0;
+      }
+      .install-copy:hover {
+        color: var(--accent);
+      }
+
+      /* ─── METRICS GRID ──────────────────────── */
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin: 20px 0;
+      }
+      .metric-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 18px 20px;
+        transition: border-color 0.2s;
+      }
+      .metric-card:hover {
+        border-color: rgba(200, 255, 0, 0.25);
+      }
+      .metric-card-label {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 12px;
+        opacity: 0.7;
+      }
+      .metric-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .metric-tag {
+        font-family: var(--mono);
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        color: #aab;
+      }
+
+      /* ─── TOAST ─────────────────────────────── */
+      #toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+        color: var(--text);
+        padding: 13px 20px;
+        border-radius: 6px;
+        font-family: var(--mono);
+        font-size: 12px;
+        opacity: 0;
+        transform: translateY(10px);
+        transition:
+          opacity 0.25s,
+          transform 0.25s;
+        z-index: 9998;
+        max-width: calc(100vw - 48px);
+      }
+      #toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* ─── SCROLLBAR ─────────────────────────── */
+      ::-webkit-scrollbar {
+        width: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 99px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--accent);
+      }
+
+      /* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+
+      /* Large desktop */
+      @media (min-width: 1200px) {
+        .doc-hero h1 {
+          font-size: 80px;
+        }
+        .doc-section h2 {
+          font-size: 46px;
+        }
+      }
+
+      /* Tablet landscape */
+      @media (max-width: 1024px) {
+        :root {
+          --px: 28px;
+          --sidebar: 220px;
+        }
+        .doc-content {
+          padding-left: 36px;
+        }
+        .doc-hero h1 {
+          font-size: 60px;
+        }
+        .doc-section h2 {
+          font-size: 36px;
+        }
+      }
+
+      /* Tablet portrait — collapse sidebar */
+      @media (max-width: 768px) {
+        :root {
+          --px: 20px;
+        }
+
+        .brand-tagline {
+          display: none;
+        }
+        .brand-name {
+          font-size: 24px;
+        }
+        .logo-hex,
+        .logo-hex svg {
+          width: 36px;
+          height: 36px;
+        }
+
+        .toc-toggle {
+          display: flex;
+        }
+
+        .doc-layout {
+          flex-direction: column;
+          padding: 0;
+        }
+
+        .doc-sidebar {
+          width: 100%;
+          position: relative;
+          top: 0;
+          height: auto;
+          overflow: hidden;
+          max-height: 0;
+          padding: 0 var(--px);
+          border-bottom: 1px solid var(--border);
+          transition:
+            max-height 0.35s ease,
+            padding 0.35s ease;
+        }
+        .doc-sidebar.open {
+          max-height: 600px;
+          padding: 20px var(--px) 24px;
+        }
+
+        .doc-content {
+          padding: 32px var(--px) 60px;
+          border-left: none;
+          border-top: 1px solid var(--border);
+        }
+
+        .doc-hero h1 {
+          font-size: 52px;
+        }
+        .doc-hero-desc {
+          font-size: 15px;
+        }
+        .doc-section h2 {
+          font-size: 34px;
+        }
+        .doc-section h3 {
+          font-size: 17px;
+        }
+        .doc-section p,
+        .doc-section li {
+          font-size: 14px;
+        }
+
+        .metrics-grid {
+          grid-template-columns: 1fr;
+        }
+
+        pre.code-block {
+          font-size: 12px;
+          padding: 18px 16px;
+        }
+      }
+
+      /* Mobile */
+      @media (max-width: 600px) {
+        :root {
+          --px: 16px;
+        }
+
+        .header-inner {
+          padding: 12px var(--px);
+        }
+        .brand-name {
+          font-size: 22px;
+        }
+        .logo-hex,
+        .logo-hex svg {
+          width: 34px;
+          height: 34px;
+        }
+        .nav-link {
+          padding: 6px 10px;
+          font-size: 10px;
+        }
+
+        .doc-hero h1 {
+          font-size: 42px;
+        }
+        .doc-hero-desc {
+          font-size: 14px;
+        }
+        .doc-section h2 {
+          font-size: 30px;
+        }
+
+        .install-box {
+          flex-wrap: wrap;
+        }
+        .install-prompt {
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+          width: 100%;
+          padding: 10px 16px;
+        }
+        .install-cmd {
+          padding: 12px 16px;
+          font-size: 13px;
+        }
+        .install-copy {
+          border-left: none;
+          border-top: 1px solid var(--border);
+          padding: 10px 16px;
+          width: 100%;
+          text-align: center;
+        }
+
+        pre.code-block {
+          font-size: 11.5px;
+          padding: 16px 14px;
+        }
+
+        #toast {
+          bottom: 16px;
+          right: 16px;
+          left: 16px;
+        }
+      }
+
+      /* Very small */
+      @media (max-width: 380px) {
+        .doc-hero h1 {
+          font-size: 36px;
+        }
+        .doc-section h2 {
+          font-size: 26px;
+        }
+        .brand-name {
+          font-size: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ─── LOADER ───────────────────────────────── -->
+    <div id="loader">
+      <svg class="loader-hex" viewBox="0 0 80 80" fill="none">
+        <polygon class="lhex" points="40,3 74,21 74,59 40,77 6,59 6,21" />
+        <path class="lbolt" d="M46 12 L27 44 H39 L34 68 L57 32 H45 Z" />
+      </svg>
+      <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+      <div class="loader-label">Loading Docs</div>
+    </div>
+
+    <!-- ─── HEADER ───────────────────────────────── -->
+    <header>
+      <div class="header-inner">
+        <a class="brand" href="index.html">
+          <div class="logo-hex">
+            <svg viewBox="0 0 44 44" fill="none">
+              <polygon
+                class="hex-bg"
+                points="22,2 40,11.5 40,32.5 22,42 4,32.5 4,11.5"
+              />
+              <path class="hex-bolt" d="M25 8 L15 24 H22 L19 36 L31 18 H24 Z" />
+            </svg>
+          </div>
+          <div>
+            <div class="brand-name">LazyTune</div>
+            <div class="brand-tagline">Hyperparameter Optimizer</div>
+          </div>
+        </a>
+        <nav class="header-nav">
+          <a class="nav-link" href="index.html">App</a>
+          <a class="nav-link active" href="docs.html">Docs</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Mobile TOC toggle -->
+    <button class="toc-toggle" id="toc-toggle" onclick="toggleToc()">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+      >
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <line x1="3" y1="12" x2="16" y2="12" />
+        <line x1="3" y1="18" x2="21" y2="18" />
+      </svg>
+      Contents
+    </button>
+
+    <!-- ─── LAYOUT ────────────────────────────────── -->
+    <div class="doc-layout">
+      <!-- SIDEBAR -->
+      <aside class="doc-sidebar" id="doc-sidebar">
+        <div class="sidebar-title">Documentation</div>
+        <div class="toc-group">
+          <div class="toc-group-label">Getting Started</div>
+          <a class="toc-link active" href="#overview" onclick="closeTocMobile()"
+            >Overview</a
+          >
+          <a class="toc-link" href="#installation" onclick="closeTocMobile()"
+            >Installation</a
+          >
+          <a class="toc-link" href="#quickstart" onclick="closeTocMobile()"
+            >Quick Start</a
+          >
+        </div>
+        <div class="toc-group">
+          <div class="toc-group-label">Examples</div>
+          <a class="toc-link" href="#example-svm" onclick="closeTocMobile()"
+            >SVM Classification</a
+          >
+          <a
+            class="toc-link"
+            href="#example-regression"
+            onclick="closeTocMobile()"
+            >Regression</a
+          >
+        </div>
+        <div class="toc-group">
+          <div class="toc-group-label">Reference</div>
+          <a class="toc-link" href="#metrics" onclick="closeTocMobile()"
+            >Supported Metrics</a
+          >
+          <a class="toc-link" href="#how-it-works" onclick="closeTocMobile()"
+            >How It Works</a
+          >
+          <a class="toc-link" href="#api" onclick="closeTocMobile()"
+            >API Reference</a
+          >
+          <a class="toc-link sub" href="#api-attrs" onclick="closeTocMobile()"
+            >Attributes</a
+          >
+          <a class="toc-link sub" href="#api-methods" onclick="closeTocMobile()"
+            >Methods</a
+          >
+        </div>
+        <div class="toc-group">
+          <div class="toc-group-label">Project</div>
+          <a class="toc-link" href="#requirements" onclick="closeTocMobile()"
+            >Requirements</a
+          >
+          <a class="toc-link" href="#license" onclick="closeTocMobile()"
+            >License</a
+          >
+        </div>
+      </aside>
+
+      <!-- CONTENT -->
+      <main class="doc-content">
+        <!-- HERO -->
+        <div class="doc-hero" id="overview">
+          <div class="doc-hero-badge"><span></span>v1.0 &mdash; Stable</div>
+          <h1>Lazy<span>Tune</span><br />Docs</h1>
+          <p class="doc-hero-desc">
+            A fast and efficient hyperparameter optimization framework for
+            scikit-learn models. Dramatically reduces training time with a smart
+            screening &rarr; pruning &rarr; full-training pipeline.
+          </p>
+          <div class="hero-tags">
+            <span class="hero-tag green">Classification</span>
+            <span class="hero-tag green">Regression</span>
+            <span class="hero-tag blue">scikit-learn compatible</span>
+            <span class="hero-tag">Python &ge; 3.8</span>
+            <span class="hero-tag">MIT License</span>
+          </div>
+        </div>
+
+        <!-- INSTALLATION -->
+        <div class="doc-section" id="installation">
+          <h2 data-num="01">Installation</h2>
+          <p>
+            Install LazyTune via pip. No extra configuration needed — all
+            dependencies are pulled in automatically.
+          </p>
+          <div class="install-box">
+            <div class="install-prompt">$</div>
+            <div class="install-cmd">pip install lazytune</div>
+            <button class="install-copy" onclick="copyInstall()">Copy</button>
+          </div>
+          <p>Requires Python 3.8+, numpy, pandas, and scikit-learn.</p>
+        </div>
+
+        <!-- QUICK START -->
+        <div class="doc-section" id="quickstart">
+          <h2 data-num="02">Quick Start</h2>
+          <p>
+            Get up and running with <code>RandomForestClassifier</code> on the
+            breast cancer dataset in under a minute.
+          </p>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span class="code-lang">Python</span
+              ><button class="code-copy" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre
+              class="code-block"
+            ><span class="kw">from</span> sklearn.datasets <span class="kw">import</span> load_breast_cancer
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+<span class="kw">from</span> lazytune <span class="kw">import</span> SmartSearch
+
+X, y <span class="op">=</span> <span class="fn">load_breast_cancer</span>(return_X_y<span class="op">=</span><span class="nb">True</span>)
+
+param_grid <span class="op">=</span> {
+    <span class="str">"n_estimators"</span>:     [<span class="nb">50</span>, <span class="nb">100</span>, <span class="nb">150</span>, <span class="nb">200</span>],
+    <span class="str">"max_depth"</span>:        [<span class="nb">5</span>, <span class="nb">10</span>, <span class="nb">15</span>, <span class="nb">None</span>],
+    <span class="str">"min_samples_split"</span>: [<span class="nb">2</span>, <span class="nb">3</span>, <span class="nb">4</span>, <span class="nb">5</span>]
+}
+
+search <span class="op">=</span> <span class="cls">SmartSearch</span>(
+    estimator<span class="op">=</span><span class="fn">RandomForestClassifier</span>(random_state<span class="op">=</span><span class="nb">42</span>),
+    param_grid<span class="op">=</span>param_grid,
+    metric<span class="op">=</span><span class="str">"accuracy"</span>,
+    cv_folds<span class="op">=</span><span class="nb">3</span>,
+    prune_ratio<span class="op">=</span><span class="nb">0.5</span>,  <span class="cm"># keep top 50% after screening</span>
+    n_jobs<span class="op">=</span><span class="nb">-1</span>          <span class="cm"># use all available cores</span>
+)
+
+search.<span class="fn">fit</span>(X, y)
+
+<span class="fn">print</span>(<span class="str">"Best parameters:"</span>, search.best_params_)
+<span class="fn">print</span>(<span class="str">"Best CV score:   "</span>, search.best_score_)
+<span class="fn">print</span>(<span class="str">"\nBest model:\n"</span>, search.best_estimator_)</pre>
+          </div>
+        </div>
+
+        <!-- EXAMPLE SVM -->
+        <div class="doc-section" id="example-svm">
+          <h2 data-num="03">SVM Classification</h2>
+          <p>
+            Use <code>SmartSearch</code> with a Support Vector Machine to tune
+            <code>C</code>, <code>kernel</code>, and
+            <code>gamma</code> together.
+          </p>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span class="code-lang">Python</span
+              ><button class="code-copy" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre
+              class="code-block"
+            ><span class="kw">from</span> sklearn.svm <span class="kw">import</span> SVC
+<span class="kw">from</span> lazytune <span class="kw">import</span> SmartSearch
+
+search <span class="op">=</span> <span class="cls">SmartSearch</span>(
+    estimator<span class="op">=</span><span class="fn">SVC</span>(random_state<span class="op">=</span><span class="nb">42</span>),
+    param_grid<span class="op">=</span>{
+        <span class="str">"C"</span>:      [<span class="nb">0.1</span>, <span class="nb">1</span>, <span class="nb">10</span>, <span class="nb">50</span>, <span class="nb">100</span>],
+        <span class="str">"kernel"</span>: [<span class="str">"linear"</span>, <span class="str">"rbf"</span>],
+        <span class="str">"gamma"</span>:  [<span class="str">"scale"</span>, <span class="str">"auto"</span>, <span class="nb">0.001</span>, <span class="nb">0.0001</span>]
+    },
+    metric<span class="op">=</span><span class="str">"f1_macro"</span>,
+    cv_folds<span class="op">=</span><span class="nb">5</span>,
+    prune_ratio<span class="op">=</span><span class="nb">0.6</span>
+)</pre>
+          </div>
+        </div>
+
+        <!-- EXAMPLE REGRESSION -->
+        <div class="doc-section" id="example-regression">
+          <h2 data-num="04">Regression</h2>
+          <p>
+            Works identically for regression — just switch the estimator and use
+            a regression metric like <code>r2</code>.
+          </p>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span class="code-lang">Python</span
+              ><button class="code-copy" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre
+              class="code-block"
+            ><span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestRegressor
+<span class="kw">from</span> lazytune <span class="kw">import</span> SmartSearch
+
+search <span class="op">=</span> <span class="cls">SmartSearch</span>(
+    estimator<span class="op">=</span><span class="fn">RandomForestRegressor</span>(random_state<span class="op">=</span><span class="nb">42</span>),
+    param_grid<span class="op">=</span>{
+        <span class="str">"n_estimators"</span>:     [<span class="nb">100</span>, <span class="nb">200</span>, <span class="nb">300</span>, <span class="nb">500</span>],
+        <span class="str">"max_depth"</span>:        [<span class="nb">8</span>, <span class="nb">12</span>, <span class="nb">16</span>, <span class="nb">None</span>],
+        <span class="str">"min_samples_split"</span>: [<span class="nb">2</span>, <span class="nb">4</span>, <span class="nb">8</span>]
+    },
+    metric<span class="op">=</span><span class="str">"r2"</span>,
+    cv_folds<span class="op">=</span><span class="nb">4</span>,
+    n_jobs<span class="op">=</span><span class="nb">-1</span>
+)</pre>
+          </div>
+        </div>
+
+        <!-- METRICS -->
+        <div class="doc-section" id="metrics">
+          <h2 data-num="05">Supported Metrics</h2>
+          <p>
+            LazyTune supports all scikit-learn scoring strings. Pass any as the
+            <code>metric</code> argument. For custom metrics use
+            <code>sklearn.metrics.make_scorer</code>.
+          </p>
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-card-label">Classification</div>
+              <div class="metric-tags">
+                <span class="metric-tag">accuracy</span
+                ><span class="metric-tag">f1</span>
+                <span class="metric-tag">f1_macro</span
+                ><span class="metric-tag">f1_weighted</span>
+                <span class="metric-tag">precision</span
+                ><span class="metric-tag">recall</span>
+                <span class="metric-tag">roc_auc</span
+                ><span class="metric-tag">balanced_accuracy</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-card-label">Regression</div>
+              <div class="metric-tags">
+                <span class="metric-tag">r2</span>
+                <span class="metric-tag">neg_mean_squared_error</span>
+                <span class="metric-tag">neg_root_mean_squared_error</span>
+                <span class="metric-tag">neg_mean_absolute_error</span>
+                <span class="metric-tag"
+                  >neg_mean_absolute_percentage_error</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HOW IT WORKS -->
+        <div class="doc-section" id="how-it-works">
+          <h2 data-num="06">How It Works</h2>
+          <p>
+            LazyTune's four-phase pipeline eliminates wasted compute compared to
+            brute-force GridSearchCV — while typically reaching identical final
+            performance.
+          </p>
+          <div class="pipeline">
+            <div class="pipe-step">
+              <div class="pipe-num">1</div>
+              <div class="pipe-body">
+                <h4>Generate Combinations</h4>
+                <p>
+                  All hyperparameter combinations are produced from the
+                  user-defined <code>param_grid</code>.
+                </p>
+              </div>
+            </div>
+            <div class="pipe-step">
+              <div class="pipe-num">2</div>
+              <div class="pipe-body">
+                <h4>Screening Round</h4>
+                <p>
+                  Every candidate is quickly evaluated with cross-validation
+                  using minimal resources — just enough to rank relative
+                  performance.
+                </p>
+              </div>
+            </div>
+            <div class="pipe-step">
+              <div class="pipe-num">3</div>
+              <div class="pipe-body">
+                <h4>Rank &amp; Prune</h4>
+                <p>
+                  Candidates are sorted by screening score. The bottom
+                  <code>prune_ratio</code> fraction are eliminated before full
+                  training begins.
+                </p>
+              </div>
+            </div>
+            <div class="pipe-step">
+              <div class="pipe-num">4</div>
+              <div class="pipe-body">
+                <h4>Full Training</h4>
+                <p>
+                  Only top-ranked survivors are trained fully. The best model,
+                  parameters, score and detailed trial summary are returned.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- API -->
+        <div class="doc-section" id="api">
+          <h2 data-num="07">API Reference</h2>
+          <p>
+            All functionality is exposed through the
+            <code>SmartSearch</code> class.
+          </p>
+          <div class="code-wrap">
+            <div class="code-header">
+              <span class="code-lang">Signature</span
+              ><button class="code-copy" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre class="code-block"><span class="cls">SmartSearch</span>(
+    <span class="pm">estimator</span>,           <span class="cm"># any scikit-learn style estimator</span>
+    <span class="pm">param_grid</span>,          <span class="cm"># dict of param -> list of values</span>
+    <span class="pm">metric</span>,              <span class="cm"># scoring string or make_scorer object</span>
+    <span class="pm">cv_folds</span>  <span class="op">=</span> <span class="nb">3</span>,        <span class="cm"># number of CV folds for screening</span>
+    <span class="pm">prune_ratio</span> <span class="op">=</span> <span class="nb">0.5</span>,   <span class="cm"># fraction to prune (0.0 = keep all)</span>
+    <span class="pm">n_jobs</span>    <span class="op">=</span> <span class="nb">1</span>         <span class="cm"># parallel workers (-1 = all cores)</span>
+)</pre>
+          </div>
+
+          <h3 id="api-attrs">Attributes</h3>
+          <div class="table-scroll">
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>Attribute</th>
+                  <th>Type</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>best_params_</code></td>
+                  <td>dict</td>
+                  <td>Best found hyperparameter dictionary.</td>
+                </tr>
+                <tr>
+                  <td><code>best_score_</code></td>
+                  <td>float</td>
+                  <td>Best cross-validated score achieved.</td>
+                </tr>
+                <tr>
+                  <td><code>best_estimator_</code></td>
+                  <td>estimator</td>
+                  <td>Fully fitted estimator with best parameters.</td>
+                </tr>
+                <tr>
+                  <td><code>summary_</code></td>
+                  <td>DataFrame</td>
+                  <td>pandas DataFrame with all trial results and rankings.</td>
+                </tr>
+                <tr>
+                  <td><code>cv_results_</code></td>
+                  <td>dict</td>
+                  <td>Detailed cross-validation results per candidate.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 id="api-methods">Methods</h3>
+          <div class="table-scroll">
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>Method</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>.fit(X, y)</code></td>
+                  <td>Run the full optimization pipeline on training data.</td>
+                </tr>
+                <tr>
+                  <td><code>.predict(X)</code></td>
+                  <td>Predict using the best found estimator.</td>
+                </tr>
+                <tr>
+                  <td><code>.score(X, y)</code></td>
+                  <td>Score the best estimator on given data.</td>
+                </tr>
+                <tr>
+                  <td><code>.get_params()</code></td>
+                  <td>Get parameters for this estimator.</td>
+                </tr>
+                <tr>
+                  <td><code>.set_params(**params)</code></td>
+                  <td>Set parameters of this estimator.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- REQUIREMENTS -->
+        <div class="doc-section" id="requirements">
+          <h2 data-num="08">Requirements</h2>
+          <ul>
+            <li><strong>Python</strong> &ge; 3.8</li>
+            <li><strong>numpy</strong></li>
+            <li><strong>pandas</strong></li>
+            <li><strong>scikit-learn</strong></li>
+          </ul>
+          <p>All dependencies are installed automatically via pip.</p>
+        </div>
+
+        <!-- LICENSE -->
+        <div class="doc-section" id="license">
+          <h2 data-num="09">License &amp; Author</h2>
+          <p>
+            LazyTune is released under the <strong>MIT License</strong> — free
+            to use, modify, and distribute.
+          </p>
+          <p>
+            Built by <strong>Anik Chand</strong>. Feedback, issues, stars, and
+            contributions are very welcome!
+          </p>
+        </div>
+      </main>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+      /* Loader */
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          const l = document.getElementById("loader");
+          if (l) l.classList.add("hidden");
+        }, 1800);
+      });
+
+      /* Mobile TOC */
+      function toggleToc() {
+        const sidebar = document.getElementById("doc-sidebar");
+        sidebar.classList.toggle("open");
+      }
+      function closeTocMobile() {
+        if (window.innerWidth <= 768) {
+          document.getElementById("doc-sidebar").classList.remove("open");
+        }
+      }
+
+      /* TOC active tracking */
+      const sections = document.querySelectorAll(".doc-section, .doc-hero");
+      const tocLinks = document.querySelectorAll(".toc-link");
+      const obs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              const id = e.target.id;
+              tocLinks.forEach((l) =>
+                l.classList.toggle(
+                  "active",
+                  l.getAttribute("href") === "#" + id,
+                ),
+              );
+            }
+          });
+        },
+        { rootMargin: "-10% 0px -80% 0px" },
+      );
+      sections.forEach((s) => obs.observe(s));
+
+      /* Copy code */
+      function copyCode(btn) {
+        const pre = btn.closest(".code-wrap").querySelector("pre");
+        navigator.clipboard.writeText(pre.innerText);
+        btn.textContent = "Copied!";
+        showToast("Copied to clipboard");
+        setTimeout(() => {
+          btn.textContent = "Copy";
+        }, 2000);
+      }
+
+      /* Copy install */
+      function copyInstall() {
+        navigator.clipboard.writeText("pip install lazytune");
+        showToast("Copied: pip install lazytune");
+      }
+
+      /* Toast */
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        clearTimeout(t._t);
+        t._t = setTimeout(() => t.classList.remove("show"), 2500);
+      }
+    </script>
+  </body>
+</html>
