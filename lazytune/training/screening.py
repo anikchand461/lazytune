@@ -1,20 +1,34 @@
-from sklearn.model_selection import cross_val_score
 from sklearn.base import clone
+from sklearn.model_selection import cross_val_score
 from joblib import Parallel, delayed
+import numpy as np
 
 
-def _evaluate_model(model, params, X_train, y_train, metric, cv_folds):
+def _evaluate_model(model, item, X_train, y_train, metric, cv):
 
-    m = clone(model)
-    m.set_params(**params)
+    params = item["params"]
 
-    score = cross_val_score(
-        m,
-        X_train,
-        y_train,
-        cv=cv_folds,
-        scoring=metric
-    ).mean()
+    try:
+        m = clone(model)
+        m.set_params(**params)
+
+        scores = cross_val_score(
+            m,
+            X_train,
+            y_train,
+            scoring=metric,
+            cv=cv,
+            error_score=np.nan
+        )
+
+        score = np.nanmean(scores)
+
+        if np.isnan(score):
+            score = -np.inf
+
+    except Exception:
+        # Invalid parameter combination
+        score = -np.inf
 
     return {
         "params": params,
@@ -28,39 +42,40 @@ def screening_phase(
     X_train,
     y_train,
     metric,
-    cv_folds,
+    cv,
     parallel=True,
     n_jobs=-1
 ):
+
+    items = [{"params": p} for p in param_combinations]
 
     if parallel:
 
         results = Parallel(n_jobs=n_jobs)(
             delayed(_evaluate_model)(
                 model,
-                params,
+                item,
                 X_train,
                 y_train,
                 metric,
-                cv_folds
+                cv
             )
-            for params in param_combinations
+            for item in items
         )
 
     else:
 
         results = []
 
-        for params in param_combinations:
-
+        for item in items:
             results.append(
                 _evaluate_model(
                     model,
-                    params,
+                    item,
                     X_train,
                     y_train,
                     metric,
-                    cv_folds
+                    cv
                 )
             )
 

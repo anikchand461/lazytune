@@ -1,4 +1,5 @@
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import get_scorer
 
 from .param_grid import generate_param_combinations
 from .ranking import rank_models
@@ -18,7 +19,7 @@ class SmartSearch:
 
     def __init__(
         self,
-        model,
+        estimator,
         param_grid,
         prune_ratio=0.5,
         metric="accuracy",
@@ -30,7 +31,7 @@ class SmartSearch:
         n_jobs=-1
     ):
 
-        self.model = model
+        self.estimator = estimator
         self.param_grid = param_grid
         self.prune_ratio = prune_ratio
 
@@ -48,12 +49,19 @@ class SmartSearch:
         self.best_params_ = None
         self.best_score_ = None
         self.best_model_ = None
+        self.best_estimator_ = None
         self.summary_ = None
+
 
     def fit(self, X, y):
 
         timer = Timer()
         timer.start()
+
+        # SAFE INITIALIZATION
+        screening_results = []
+        total_models = 0
+        pruned_models = 0
 
         try:
 
@@ -93,7 +101,7 @@ class SmartSearch:
             # -----------------------------
 
             screening_results = screening_phase(
-                self.model,
+                self.estimator,
                 param_combinations,
                 X_train,
                 y_train,
@@ -139,7 +147,7 @@ class SmartSearch:
             # -----------------------------
 
             trained_models = full_training(
-                self.model,
+                self.estimator,
                 selected_models,
                 X_train,
                 y_train,
@@ -172,12 +180,22 @@ class SmartSearch:
         except Exception as e:
 
             print("\nLazyTune Warning:", str(e))
-            print("Falling back to best screened model\n")
 
-            ranked_models = rank_models(screening_results)
-            best_model = ranked_models[0]
+            if screening_results:
 
-            pruned_models = total_models - 1
+                print("Falling back to best screened model\n")
+
+                ranked_models = rank_models(screening_results)
+                best_model = ranked_models[0]
+
+                pruned_models = total_models - 1
+
+            else:
+
+                raise RuntimeError(
+                    "LazyTune failed during screening. "
+                    "Check estimator configuration."
+                )
 
         # -----------------------------
         # Save results
@@ -186,6 +204,7 @@ class SmartSearch:
         self.best_params_ = best_model["params"]
         self.best_score_ = best_model["score"]
         self.best_model_ = best_model.get("model", None)
+        self.best_estimator_ = self.best_model_
 
         time_taken = timer.stop()
 
@@ -206,9 +225,32 @@ class SmartSearch:
 
         return self
 
+
     def get_best_params(self):
         return self.best_params_
 
 
     def get_summary(self):
         return self.summary_
+
+
+    def predict(self, X):
+
+        if self.best_model_ is None:
+            raise RuntimeError(
+                "SmartSearch must be fitted before calling predict()."
+            )
+
+        return self.best_model_.predict(X)
+
+
+    def score(self, X, y):
+
+        if self.best_model_ is None:
+            raise RuntimeError(
+                "SmartSearch must be fitted before calling score()."
+            )
+
+        scorer = get_scorer(self.metric)
+
+        return scorer(self.best_model_, X, y)

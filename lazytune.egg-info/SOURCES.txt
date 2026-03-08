@@ -8,7 +8,6 @@ lazytune.egg-info/dependency_links.txt
 lazytune.egg-info/requires.txt
 lazytune.egg-info/top_level.txt
 lazytune/evaluation/__init__.py
-lazytune/evaluation/metrics.py
 lazytune/evaluation/validation.py
 lazytune/pruning/__init__.py
 lazytune/pruning/prune.py
@@ -24,6 +23,7 @@ lazytune/training/screening.py
 lazytune/utils/__init__.py
 lazytune/utils/data_split.py
 lazytune/utils/timer.py
+tests/test.py
 tests/test_lazytune.py
 tests/test_pipeline.py
 tests/test_pruning.py

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lazytune"
-version = "0.1.0"
+version = "0.1.2"
 description = "Fast hyperparameter optimization using screening and pruning"
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.8"
@@ -19,7 +19,27 @@ dependencies = [
     "scikit-learn"
 ]
 
+keywords = [
+    "machine learning",
+    "hyperparameter optimization",
+    "model tuning",
+    "grid search",
+    "optimization"
+]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/lazytune"
+Repository = "https://github.com/yourusername/lazytune"
+Issues = "https://github.com/yourusername/lazytune/issues"
+
 [tool.setuptools.packages.find]
 include = ["lazytune*"]
 exclude = ["api*", "frontend*", "datasets*", "examples*", "tests*", "docs*"]
-
