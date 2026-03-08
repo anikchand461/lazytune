@@ -257,7 +257,7 @@ async function uploadDataset() {
   const fd = new FormData();
   fd.append("file", file);
   try {
-    await fetch("http://127.0.0.1:8000/datasets/upload", {
+    await fetch("https://lazytune.onrender.com/datasets/upload", {
       method: "POST",
       body: fd,
     });
@@ -280,7 +280,7 @@ async function runOptimization() {
   setStatus("running", "Running...");
   setStep(4);
   try {
-    const res = await fetch("http://127.0.0.1:8000/optimize/", {
+    const res = await fetch("https://lazytune.onrender.com/optimize/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ model, target, metric, param_grid }),
