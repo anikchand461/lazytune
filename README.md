@@ -5,7 +5,7 @@
 ![LazyTune](frontend/main.png)
 
 **Fast, smart, and lazy hyperparameter optimization**  
-for scikit-learn models — up to **5–10× faster** than GridSearchCV  
+for scikit-learn models —  **faster** than GridSearchCV  
 with almost the same final performance.
 
 ![Data Flow](frontend/dataflow.png)
