@@ -2,7 +2,7 @@
 
 <br/>
 
-<img src="frontend/lazytune.png" alt="Ragbucket Logo" width="180" />
+<img src="frontend/lazytune.png" alt="Ragbucket Logo" width="160" />
 
 # Lazytune
 
@@ -21,8 +21,6 @@
 <br/>
 
 </div>
-
---
 
 <!-- <div align="center">
 
