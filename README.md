@@ -47,6 +47,46 @@ with almost the same final performance.
 
 </div> -->
 
+## ◈ The Problem
+
+Hyperparameter tuning is one of the most expensive steps in machine learning.
+
+The standard solution is usually:
+
+```python
+GridSearchCV(...)
+```
+
+But Grid Search has a major drawback:
+
+❌ Trains every parameter combination
+
+❌ Wastes time on obviously poor configurations
+
+❌ Scales poorly as search spaces grow
+
+❌ Can take hours for large models
+
+❌ Most configurations never had a chance of winning
+
+For example:
+
+```text
+n_estimators = [50,100,150,200]
+max_depth   = [5,10,15,None]
+min_split   = [2,3,4,5]
+
+4 × 4 × 4 = 64 full trainings
+```
+
+Yet only a handful of those candidates are actually promising.
+
+---
+
+LazyTune fixes this.
+
+---
+
 ## 🔥 Why LazyTune?
 
 - 100% compatible with **any scikit-learn-style estimator**
@@ -57,6 +97,8 @@ with almost the same final performance.
 - Parallel execution (`n_jobs`)
 - Clean trial summaries & rankings in pandas DataFrame
 - Returns best model, params, score + detailed report
+
+![LazyTune](frontend/main.png)
 
 <br>
 
@@ -158,6 +200,8 @@ Custom metrics → use `sklearn.metrics.make_scorer`
 <br>
 
 ## How LazyTune Works
+
+![Data Flow](frontend/dataflow.png)
 
 1. Generate all (or sampled) hyperparameter combinations
 2. Quick **screening** round with cross-validation
