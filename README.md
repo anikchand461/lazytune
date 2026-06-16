@@ -1,5 +1,33 @@
 <div align="center">
 
+<br/>
+
+<img src="frontend/img/ragbucket.png" alt="Ragbucket Logo" width="160" />
+
+<br/>
+
+# Lazytune
+
+<h3><em>Portable Executable RAG Artifacts for Python</em></h3>
+
+**Build once. Load anywhere. Query forever.**
+
+<br/>
+
+[![PyPI version](https://img.shields.io/pypi/v/ragbucket?style=for-the-badge&color=FFD700&labelColor=0d0d1a&logo=python&logoColor=FFD700)](https://pypi.org/project/lazytune/)
+[![Python](https://img.shields.io/pypi/pyversions/ragbucket?style=for-the-badge&color=4FC3F7&labelColor=0d0d1a)](https://pypi.org/project/lazytune/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-A8FF78?style=for-the-badge&labelColor=0d0d1a)](LICENSE)
+[![Downloads](https://img.shields.io/pypi/dm/ragbucket?style=for-the-badge&color=FF6B9D&labelColor=0d0d1a)](https://pypi.org/project/lazytune/)
+[![Website](https://img.shields.io/badge/Website-ragbucket.vercel.app-c084fc?style=for-the-badge&labelColor=0d0d1a&logo=vercel&logoColor=c084fc)](https://lazytune.vercel.app)
+
+<br/>
+
+</div>
+
+--
+
+<!-- <div align="center">
+
 # LazyTune 🚀
 
 ![LazyTune](frontend/main.png)
@@ -21,7 +49,7 @@ with almost the same final performance.
 
 <br>
 
-</div>
+</div> -->
 
 ## 🔥 Why LazyTune?
 
