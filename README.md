@@ -12,11 +12,16 @@
 
 <br/>
 
-[![PyPI version](https://img.shields.io/pypi/v/ragbucket?style=for-the-badge&color=FFD700&labelColor=0d0d1a&logo=python&logoColor=FFD700)](https://pypi.org/project/lazytune/)
-[![Python](https://img.shields.io/pypi/pyversions/ragbucket?style=for-the-badge&color=4FC3F7&labelColor=0d0d1a)](https://pypi.org/project/lazytune/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-A8FF78?style=for-the-badge&labelColor=0d0d1a)](LICENSE)
-[![Downloads](https://img.shields.io/pypi/dm/ragbucket?style=for-the-badge&color=FF6B9D&labelColor=0d0d1a)](https://pypi.org/project/lazytune/)
-[![Website](https://img.shields.io/badge/Website-ragbucket.vercel.app-c084fc?style=for-the-badge&labelColor=0d0d1a&logo=vercel&logoColor=c084fc)](https://lazytune.vercel.app)
+[![PyPI version](https://img.shields.io/pypi/v/lazytune?style=for-the-badge\&color=FFD700\&labelColor=0d0d1a\&logo=python\&logoColor=FFD700)](https://pypi.org/project/lazytune/)
+
+[![Python](https://img.shields.io/pypi/pyversions/lazytune?style=for-the-badge\&color=4FC3F7\&labelColor=0d0d1a)](https://pypi.org/project/lazytune/)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-A8FF78?style=for-the-badge\&labelColor=0d0d1a)](LICENSE)
+
+[![Downloads](https://img.shields.io/pypi/dm/lazytune?style=for-the-badge\&color=FF6B9D\&labelColor=0d0d1a)](https://pypi.org/project/lazytune/)
+
+[![Website](https://img.shields.io/badge/Website-lazytune.vercel.app-c084fc?style=for-the-badge\&labelColor=0d0d1a\&logo=vercel\&logoColor=c084fc)](https://lazytune.vercel.app)
+
 
 <br/>
 
@@ -80,8 +85,6 @@ min_split   = [2,3,4,5]
 ```
 
 Yet only a handful of those candidates are actually promising.
-
----
 
 LazyTune fixes this.
 
