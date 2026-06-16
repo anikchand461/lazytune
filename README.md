@@ -4,8 +4,6 @@
 
 <img src="frontend/lazytune.png" alt="Ragbucket Logo" width="180" />
 
-<br/>
-
 # Lazytune
 
 <h3><em>A Hyperparameter Optimization Framework</em></h3>
