@@ -2,15 +2,15 @@
 
 <br/>
 
-<img src="frontend/lazytune.png" alt="Ragbucket Logo" width="160" />
+<img src="frontend/lazytune.png" alt="Ragbucket Logo" width="180" />
 
 <br/>
 
 # Lazytune
 
-<h3><em>Portable Executable RAG Artifacts for Python</em></h3>
+<h3><em>A Hyperparameter Optimization Framework</em></h3>
 
-**Build once. Load anywhere. Query forever.**
+**for Sklearn Models**
 
 <br/>
 
