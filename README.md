@@ -2,7 +2,7 @@
 
 <br/>
 
-<img src="frontend/img/ragbucket.png" alt="Ragbucket Logo" width="160" />
+<img src="frontend/lazytune.png" alt="Ragbucket Logo" width="160" />
 
 <br/>
 
