@@ -1,29 +1,29 @@
 <div align="center">
 
-<br/>
+<img src="frontend/lazytune.png" width="140"/>
 
-<img src="frontend/lazytune.png" alt="Ragbucket Logo" width="160" />
+# LazyTune
 
-# Lazytune
+### *A Hyperparameter Optimization Framework*
+#### for Scikit-Learn Models
 
-<h3><em>A Hyperparameter Optimization Framework</em></h3>
+<p>
+  <a href="https://pypi.org/project/lazytune/">
+    <img src="https://img.shields.io/pypi/v/lazytune?style=for-the-badge&color=FFD700&labelColor=0d0d1a&logo=python&logoColor=FFD700">
+  </a>
+  <a href="https://pypi.org/project/lazytune/">
+    <img src="https://img.shields.io/pypi/pyversions/lazytune?style=for-the-badge&color=4FC3F7&labelColor=0d0d1a">
+  </a>
+  <a href="LICENSE">
+    <img src="https://img.shields.io/badge/License-MIT-A8FF78?style=for-the-badge&labelColor=0d0d1a">
+  </a>
+</p>
 
-**for Sklearn Models**
-
-<br/>
-
-[![PyPI version](https://img.shields.io/pypi/v/lazytune?style=for-the-badge\&color=FFD700\&labelColor=0d0d1a\&logo=python\&logoColor=FFD700)](https://pypi.org/project/lazytune/)
-
-[![Python](https://img.shields.io/pypi/pyversions/lazytune?style=for-the-badge\&color=4FC3F7\&labelColor=0d0d1a)](https://pypi.org/project/lazytune/)
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-A8FF78?style=for-the-badge\&labelColor=0d0d1a)](LICENSE)
-
-[![Downloads](https://img.shields.io/pypi/dm/lazytune?style=for-the-badge\&color=FF6B9D\&labelColor=0d0d1a)](https://pypi.org/project/lazytune/)
-
-[![Website](https://img.shields.io/badge/Website-lazytune.vercel.app-c084fc?style=for-the-badge\&labelColor=0d0d1a\&logo=vercel\&logoColor=c084fc)](https://lazytune.vercel.app)
-
-
-<br/>
+<p>
+  <a href="https://lazytune.vercel.app">
+    <img src="https://img.shields.io/badge/Live_Demo-Visit-c084fc?style=for-the-badge&labelColor=0d0d1a&logo=vercel">
+  </a>
+</p>
 
 </div>
 
