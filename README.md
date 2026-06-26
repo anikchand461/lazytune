@@ -20,6 +20,9 @@
 </p>
 
 <p>
+  <a href="https://pepy.tech/projects/lazytune">
+    <img src="https://static.pepy.tech/personalized-badge/lazytune?period=monthly&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=RED&left_text=downloads%2Fmonth" alt="PyPI Downloads">
+  </a>
   <a href="https://lazytune.vercel.app">
     <img src="https://img.shields.io/badge/Live_Demo-Visit-c084fc?style=for-the-badge&labelColor=0d0d1a&logo=vercel">
   </a>
